@@ -10,7 +10,6 @@
     "build:client:prod": "webpack --mode production --config webpack.config.js",
     "build:serve:dev": "webpack --mode development --config webpack.config.server.js",
     "build:serve:prod": "webpack --mode production --config webpack.config.server.js",
-    "build:dev": "yarn build:client:dev && yarn build:serve:dev",
     "build:prod": "yarn build:client:prod && yarn build:serve:prod"
   },
   "dependencies": {
@@ -33,7 +32,6 @@
     "pug-plain-loader": "^1.0.0",
     "sass-loader": "^7.3.1",
     "style-loader": "^1.0.0",
-    "typescript": "^3.5.3",
     "vue-loader": "^15.7.1",
     "vue-style-loader": "^4.1.2",
     "vue-template-compiler": "^2.6.10",
