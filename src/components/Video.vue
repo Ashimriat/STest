@@ -6,6 +6,7 @@
 
 <script>
   import { eventBus } from './App';
+  import config from '../config';
 
 
   export default {
@@ -22,7 +23,7 @@
       }
     },
     mounted() {
-      this.$refs.videoEl.src = 'https://webm.red/3nzQ.webm';
+      this.$refs.videoEl.src = config.videoSource;
       eventBus.$on('PLAY_VIDEO', () => this.playVideo());
     }
   }
