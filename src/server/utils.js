@@ -1,15 +1,19 @@
-import { GROUPS, CURRENCIES } from './constants';
+import { GROUPS, CURRENCIES, STATUSES } from './constants';
 
-const generateOrder = () => Math.round(Math.random() * 15) || 1;
-const generateWindow = () => Math.round((Math.random() + 1) * 5);
+const generateOrder = () => Math.round(Math.random() * 3) || 1;
+const generateWindow = () => Math.round(Math.random() * 3 || 1);
 const generateGroup = () => Math.round(Math.random() * (GROUPS.length - 1));
 
-export const generateCoupon = () => ({
-  code: generateOrder(),
-  type: GROUPS[generateGroup()],
-  window: generateWindow(),
-  status: Math.round(Math.random())
-});
+export const generateCoupon = () => {
+  const coupon = {
+    code: generateOrder(),
+    type: GROUPS[generateGroup()],
+    status: STATUSES[Math.round((Math.random() * 2))]
+  };
+  const shouldUseWindow = Math.round(Math.random());
+  if (shouldUseWindow) coupon.area = generateWindow();
+  return coupon;
+};
 
 export const generateExchangeRates = () => CURRENCIES.map(currency => {
   const low = currency.ratioRange[0];

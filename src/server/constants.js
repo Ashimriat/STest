@@ -1,4 +1,4 @@
-export const GROUPS = ['A', 'B', 'C', 'D', 'E'];
+export const GROUPS = ['А', 'Б', 'В'];
 
 export const CURRENCIES = [
   {
@@ -22,3 +22,5 @@ export const CURRENCIES = [
     ratioRange: [0.2, 0.35]
   }
 ];
+
+export const STATUSES = ['new', 'remind', 'delete'];

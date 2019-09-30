@@ -18,7 +18,7 @@ appServer.ws('/', (ws, req, next) => {
       type: 'UPDATE_RATES',
       data: generateExchangeRates()
     }));
-  }, config.currenciesRefreshTime);
+  }, config.ratesRefreshTime);
   setInterval(() => {
     ws.send(JSON.stringify({ type: 'PLAY_VIDEO' }));
   }, config.videoReplayTime);

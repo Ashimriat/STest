@@ -5,6 +5,7 @@ import { eventBus } from '../components/App';
 
 Vue.use(Vuex);
 
+const priorityStatuses = ['new', 'remind'];
 const appointZero = value => value < 10 ? `0${value}` : value;
 const formDate = dateSource => {
   const day = appointZero(dateSource.getDay() + 1);
@@ -15,6 +16,18 @@ const formDate = dateSource => {
   const seconds = appointZero(dateSource.getSeconds());
   return `${day}.${month}.${year} ${hours}:${minutes}:${seconds}`;
 };
+const formCode = codeSource => `${codeSource < 100 ? '0' : ''}${codeSource < 10 ? '0' : ''}${codeSource}`;
+const formArea = areaSource => `${areaSource < 10 ? '0' : ''}${areaSource}`;
+const formCoupon = couponData => {
+  const { code, area } = couponData;
+  const newCoupon = {
+    ...couponData,
+    code: formCode(code),
+  };
+  if (area) newCoupon.area = formArea(area);
+  return newCoupon;
+};
+
 
 export default new Vuex.Store({
   state: {
@@ -25,13 +38,24 @@ export default new Vuex.Store({
     UPDATE_COUPONS(state, { data }) {
       const { code, type, status } = data;
       const updatedCouponIndex = state.coupons.findIndex(coupon => (
-        coupon.code === code && coupon.type === type
+        (Number(coupon.code) === code && coupon.type === type)
       ));
-      if (updatedCouponIndex === -1) {
-        state.coupons.push({ ...data, date: formDate(new Date()) });
-      } else if (status === 0) {
-        state.coupons.splice(updatedCouponIndex, 0);
+      const newCoupons = [...state.coupons].map(coupon => ({
+        ...coupon,
+        status: coupon.status === 'new' ? 'newPending' : 'remindPending'
+      }));
+      if (updatedCouponIndex === -1 && status !== 'delete') {
+        newCoupons.push(formCoupon(data));
+      } else if (status === 'delete') {
+        newCoupons.splice(updatedCouponIndex, 1);
+      } else {
+        newCoupons[updatedCouponIndex] = formCoupon(data);
       }
+      newCoupons.sort((couponA, couponB) => {
+        if (priorityStatuses.includes(couponA.status) && !priorityStatuses.includes(couponB.status)) return -1;
+        return 1;
+      });
+      state.coupons = newCoupons;
     },
     UPDATE_RATES(state, { data: updatedRates }) {
       const newRates = [...state.exchangeRates];
@@ -66,6 +90,11 @@ export default new Vuex.Store({
         eventBus.$emit('PLAY_VIDEO');
       } else {
         commit(type, { data });
+        if (type !== 'UPDATE_COUPONS' || !priorityStatuses.includes(data.status)) return;
+        const newStatus = data.status === 'new' ? 'newPending' : 'remindPending';
+        setTimeout(() => {
+          commit(type, { data: { ...data, status: newStatus } })
+        }, 5000);
       }
     }
   },

@@ -1,5 +1,5 @@
 <template lang="pug">
-  video.videoFile(ref="videoEl")
+  video.video(ref="videoEl")
     p
       | Неподдерживаемая версия браузера. Пожалуйста, используйте более современный браузер
 </template>
@@ -24,17 +24,13 @@
     },
     mounted() {
       this.$refs.videoEl.src = config.videoSource;
-      eventBus.$on('PLAY_VIDEO', () => this.playVideo());
+      // eventBus.$on('PLAY_VIDEO', () => this.playVideo());
     }
   }
 </script>
 
 <style lang="sass">
-  .videoMain
-    display: flex
-    justify-content: center
-    align-items: center
-  .videoFile
-    width: 600px
-    height: 400px
+  .video
+    width: 100%
+    height: 100%
 </style>

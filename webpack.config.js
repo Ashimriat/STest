@@ -47,7 +47,7 @@ module.exports = (env, argv) => {
               loader: 'sass-loader',
               options: {
                 sourceMap: true,
-                indentedSyntax: true
+                indentedSyntax: true,
               }
             }
           ]
