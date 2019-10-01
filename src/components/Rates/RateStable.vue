@@ -1,5 +1,7 @@
 <template lang="pug">
-  div.RateStable__container
+  div.RateStable__container(
+    :class="{'RateStable__container--2modules': modulesAmount >= 2}"
+  )
     div
       | {{ value }}
     div
@@ -9,7 +11,7 @@
 <script>
   export default {
     name: 'RateStable',
-    props: ['value', 'code', 'exchangeValue']
+    props: ['value', 'code', 'exchangeValue', 'modulesAmount']
   }
 </script>
 
@@ -18,11 +20,14 @@
 
   .RateStable
     &__container
-      padding-top: 12px
+      padding-top: 0
       & > div:first-child
         font-size: 112px
         @media (max-width: $breakpoint)
           font-size: 92px
       & > div:last-child
         font-size: 32px
+      &--2modules
+        & > div:first-child
+          font-size: 92px
 </style>

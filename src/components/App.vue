@@ -13,23 +13,21 @@
         Video
       div.couponsContainer(
         v-if="modules.includes('coupons')"
-        :modulesAmount="modules.length"
         :class=`{
           'areaA': modules.length === 1,
           'areaB': modules.length === 2 || modules.length === 3
         }`
       )
-        CouponQueue
+        CouponQueue(:modulesAmount="modules.length")
       div.ratesContainer(
         v-if="modules.includes('rates')"
-        :modulesAmount="modules.length"
         :class=`{
           'areaA': modules.length === 1 || (modules.length === 2 && modules.includes('coupons')),
           'areaB': modules.length === 2 && !modules.includes('coupons'),
           'areaC': modules.length === 3
         }`
       )
-        ExchangeRates
+        ExchangeRates(:modulesAmount="modules.length")
 </template>
 
 <script>
@@ -45,7 +43,7 @@
     components: { ExchangeRates, Video, CouponQueue },
     data() {
       return {
-        modules: ['video', 'rates']
+        modules: ['video', 'rates'],
       }
     },
     mounted() {
@@ -81,6 +79,7 @@
     grid-area: b
   .areaC
     grid-area: c
+    overflow: hidden
   .couponsContainer
     background-color: #181c18
     & > *

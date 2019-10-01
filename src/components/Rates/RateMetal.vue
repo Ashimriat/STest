@@ -1,8 +1,12 @@
 <template lang="pug">
   Fragment
-    div.RateMetal__value
+    div.RateMetal__value(
+      :class="{'RateMetal__value--2modules': modulesAmount >= 2}"
+    )
       | {{ gramRub }}
-    div.RateMetal__value
+    div.RateMetal__value(
+      :class="{'RateMetal__value--2modules': modulesAmount >= 2}"
+    )
       | {{ rubGram }}
 </template>
 
@@ -12,7 +16,7 @@
   export default {
     name: 'MetalRate',
     components: { Fragment },
-    props: ['gramRub', 'rubGram']
+    props: ['gramRub', 'rubGram', 'modulesAmount']
   }
 </script>
 
@@ -23,5 +27,7 @@
     &__value
       font-size: 112px
       @media (max-width: $breakpoint)
+        font-size: 80px
+      &--2modules
         font-size: 80px
 </style>

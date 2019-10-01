@@ -1,35 +1,42 @@
 <template lang="pug">
   Fragment
     div.ExchangeRates__main
-      div.ExchangeRates__dateTime
+      div.ExchangeRates__dateTime(
+        :class="{'ExchangeRates__dateTime--3modules': modulesAmount === 3}"
+      )
         | 9 сентября 2019, понедельник
       div.ExchangeRates__info
         div.ExchangeRates__titles
-          div
-            div.ExchangeRates__exchangeRus
-              | {{ activeTab === 2 ? 'Грамм → ₽' : 'Валюта → ₽' }}
-            div.ExchangeRates__exchangeEng
-              | {{ activeTab === 2 ? 'Gram → Roubles' : 'Currency → Roubles' }}
-          div
-            div.ExchangeRates__exchangeRus
-              | {{ activeTab === 2 ? '₽ → грамм' : '₽ → валюта' }}
-            div.ExchangeRates__exchangeEng
-              | {{ activeTab === 2 ? 'Roubles → Gram' : 'Roubles → Currency' }}
+          div(
+            v-for="(titlesList, index) in titles"
+            :key="`${index === 0 ? 'ThingToRub' : 'RubToThing'}`"
+          )
+            div.ExchangeRates__exchangeRus(
+              :class="{'ExchangeRates__exchangeRus--2modules': modulesAmount >= 2}"
+            )
+              | {{ titlesList[0] }}
+            div.ExchangeRates__exchangeEng(
+              :class="{'ExchangeRates__exchangeEng--2modules': modulesAmount >= 2}"
+            )
+              | {{ titlesList[1] }}
         div.ExchangeRates__currencies
           div.ExchangeRates__currencyInfo(
-            v-for="(rate, parentIndex) in [conditional, stable, metals][activeTab]"
+            v-for="(rate, parentIndex) in tabInfo"
+            :key="`${['conditional', 'stable', 'metals'][activeTab]}-value${parentIndex}`"
           )
             Fragment
               CurrencyFlagged(
                 v-if="activeTab === 0 || activeTab === 1"
                 :key="rate.currencyCode"
                 :flag="rate.flag"
+                :modulesAmount="modulesAmount"
                 :code="rate.currencyCode"
                 :name="rate.name"
               )
               CurrencyMetal(
                 v-if="activeTab === 2"
                 :key="rate.nameEng"
+                :modulesAmount="modulesAmount"
                 :name="rate.name"
                 :nameEng="rate.nameEng"
               )
@@ -37,24 +44,32 @@
               RateConditional(
                 v-if="activeTab === 0"
                 v-for="(rateInfo, index) in rate.exchanges"
+                :key="`${rate.currencyCode}-value-${index}`"
+                :code="rate.currencyCode"
+                :modulesAmount="modulesAmount"
                 :mainValue="rateInfo.mainValue"
                 :pairs="rateInfo.pairs"
               )
               RateStable(
                 v-if="activeTab === 1"
                 v-for="(rateInfo, index) in rate.exchanges"
+                :key="`${rate.currencyCode}-value-${index}`"
+                :modulesAmount="modulesAmount"
                 :code="rate.currencyCode"
                 :exchangeValue="rate.currencyValue"
                 :value="rateInfo.value"
               )
               RateMetal(
                 v-if="activeTab === 2"
+                :modulesAmount="modulesAmount"
                 :rubGram="rate.rubGramValue"
                 :gramRub="rate.gramRubValue"
               )
-      div.ExchangeRates__otherRates
+      div.ExchangeRates__otherRates(
+        :class="{'ExchangeRates__otherRates--3modules': modulesAmount === 3}"
+      )
         div.ExchangeRates__exchangeNote
-          | {{ activeTab === 2 ? 'Цены при совершении операций с обезличенныи металлическими счетами' : 'Курсы могут отличаться во время обмена валют. Уточняйте курс у сотрудников на кассе.' }}
+          | {{ bottomText }}
         div.ExchangeRates__ratesList
           div.ExchangeRates__ratesTab(
             v-for="(tab, index) in tabs"
@@ -98,11 +113,11 @@
                 mainValue: 63.36,
                 pairs: [
                   {
-                    type: 'от 1000',
+                    type: 'От 1000',
                     value: 63.85
                   },
                   {
-                    type: 'от 5000',
+                    type: 'От 5000',
                     value: 63.96
                   },
                   {
@@ -116,11 +131,11 @@
                 mainValue: 67.75,
                 pairs: [
                   {
-                    type: 'от 1000',
+                    type: 'От 1000',
                     value: 67.26
                   },
                   {
-                    type: 'от 5000',
+                    type: 'От 5000',
                     value: 67.01
                   },
                   {
@@ -141,11 +156,11 @@
                 mainValue: 69.89,
                 pairs: [
                   {
-                    type: 'от 1000',
+                    type: 'От 1000',
                     value: 70.45
                   },
                   {
-                    type: 'от 5000',
+                    type: 'От 5000',
                     value: 70.78
                   },
                   {
@@ -159,11 +174,11 @@
                 mainValue: 74.83,
                 pairs: [
                   {
-                    type: 'от 1000',
+                    type: 'От 1000',
                     value: 74.27
                   },
                   {
-                    type: 'от 5000',
+                    type: 'От 5000',
                     value: 74.01
                   },
                   {
@@ -259,7 +274,7 @@
           },
           {
             currencyCode: 'PLN',
-            name: 'Польский злотый',
+            name: 'Польский злОтый',
             flag: '',
             currencyValue: 1,
             exchanges: [
@@ -277,7 +292,7 @@
         ],
         metals: [
           {
-            name: 'Золото',
+            name: 'ЗолОто',
             nameEng: 'Gold',
             gramRubValue: 2965,
             rubGramValue: 3268
@@ -310,7 +325,23 @@
     },
     computed: {
       ...mapGetters(['RATES']),
-      tabs: () => ['USD, EUR', 'JPY, GBP, CHF, BYN, KZT, PLN', 'Драгоценные металлы']
+      tabs: () => ['USD, EUR', 'JPY, GBP, CHF, BYN, KZT, PLN', 'Драгоценные металлы'],
+      titles() {
+        return this.activeTab === 2 ?
+          [['Грамм → ₽', 'Gram → Roubles'], ['₽ → грамм', 'Roubles → Gram']] :
+          [['Валюта → ₽', 'Currency → Roubles'], ['₽ → валюта', 'Roubles → Currency']]
+      },
+      tabInfo() {
+        const currentSource = [this.conditional, this.stable, this.metals][this.activeTab];
+        console.log('CURRENT SOURCE', currentSource);
+        console.log(this.modulesAmount === 3 ? [currentSource[0]] : currentSource);
+        return this.modulesAmount === 3 ? [currentSource[0]] : currentSource;
+      },
+      bottomText() {
+        return this.activeTab === 2 ?
+          'Цены при совершении операций с обезличенныи металлическими счетами' :
+          'Курсы могут отличаться во время обмена валют. Уточняйте курс у сотрудников на кассе.';
+      }
     }
   }
 </script>
@@ -328,14 +359,17 @@
       height: 100%
     &__main
       height: 100%
+      padding-top: 20px
     &__dateTime
       height: 56px
-      padding: 20px 32px 28px
+      padding: 0 32px 28px
       display: flex
       justify-content: flex-end
       font-size: 32px
       opacity: 0.6
       font-weight: bold
+      &--3modules
+        display: none
     &__info
       @media (max-width: $breakpoint)
         height: calc(100vh - 360px)
@@ -345,6 +379,8 @@
     &__otherRates
       display: flex
       flex-direction: column
+      &--3modules
+        display: none
     &__ratesList
       display: flex
       justify-content: space-evenly
@@ -360,17 +396,17 @@
     &__exchangeNote
       font-size: 32px
       display: flex
-      max-width: 70vw
+      max-width: 70%
       padding: 56px 0 30px
       align-self: center
       text-align: center
     &__titles
       display: flex
       justify-content: space-around
-      padding-left: 27vw
-      padding-bottom: 36px
+      padding-left: 27%
+      padding-bottom: 16px
       @media (max-width: $breakpoint)
-        padding-left: 32vw
+        padding-left: 32%
       & > div
         display: flex
         flex-direction: column
@@ -379,10 +415,14 @@
       font-size: 72px
       @media (max-width: $breakpoint)
         font-size: 48px
+      &--2modules
+        font-size: 48px
     &__exchangeEng
       font-size: 48px
       opacity: 0.6
       @media (max-width: $breakpoint)
+        font-size: 32px
+      &--2modules
         font-size: 32px
     &__currencies
       height: 54vh
@@ -390,19 +430,19 @@
       flex-direction: column
     &__currencyInfo
       display: flex
+      &:not(:last-child)
+        margin-bottom: 2vh
       @media (max-width: $breakpoint)
         max-height: 21vh
-        &:not(:last-child)
-          margin-bottom: 2vh
       & > div:first-child
-        padding-left: 3vw
-        width: 27vw
+        padding-left: 3%
+        width: 27%
         height: fit-content
         box-sizing: border-box
         @media (max-width: $breakpoint)
-          width: 32vw
+          width: 32%
       & > div:not(:first-child)
-        flex-basis: calc(73vw / 2)
+        flex-basis: calc(73% / 2)
         @media (max-width: $breakpoint)
-          flex-basis: calc(68vw / 2)
+          flex-basis: calc(68% / 2)
 </style>

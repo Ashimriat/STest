@@ -1,10 +1,13 @@
 <template lang="pug">
-  div.RateConditional__container
+  div.RateConditional__container(
+    :class="{'RateConditional__container--2modules': modulesAmount >= 2}"
+  )
     div
       | {{ mainValue }}
     div.RateConditional__rates
       div(
-        v-for="(pair, index) in pairs"
+        v-for="(pair, index) in values"
+        :key="`${code}-pair-${index}`"
       )
         div
           | {{ pair.type }}
@@ -15,7 +18,12 @@
 <script>
   export default {
     name: 'RateConditional',
-    props: ['mainValue', 'pairs']
+    props: ['mainValue', 'pairs', 'code', 'modulesAmount'],
+    computed: {
+      values() {
+        return this.modulesAmount >= 2 ? [this.pairs[0]] : this.pairs;
+      }
+    }
   }
 </script>
 
@@ -26,10 +34,12 @@
     &__container
       display: flex
       flex-direction: column
-      padding-top: 12px
       & > div:first-child
         font-size: 112px
         @media (max-width: $breakpoint)
+          font-size: 92px
+      &--2modules
+        & > div:first-child
           font-size: 92px
     &__rates
       display: flex
