@@ -78,7 +78,11 @@
             @click="setActiveTab(index)"
           )
             | {{ tab }}
-
+            div.ExchangeRates__activeTabTimer(
+              v-if="activeTab === index"
+              :style="`transition: left ease-out ${changeTimeout}s`"
+              ref="activeTabTimer"
+            )
 </template>
 
 <script>
@@ -102,6 +106,7 @@
     data() {
       return {
         activeTab: 0,
+        changeTimeout: 5, //seconds
         conditional: [
           {
             currencyCode: 'USD',
@@ -292,7 +297,7 @@
         ],
         metals: [
           {
-            name: 'ЗолОто',
+            name: 'Золото',
             nameEng: 'Gold',
             gramRubValue: 2965,
             rubGramValue: 3268
@@ -321,7 +326,20 @@
     methods: {
       setActiveTab(newTab) {
         this.activeTab = newTab;
-      }
+      },
+      switchTab() {
+        this.$refs.activeTabTimer[0].classList.add('ExchangeRates__activeTabTimer--moved');
+        setTimeout(() => {
+          this.$refs.activeTabTimer[0].classList.remove('ExchangeRates__activeTabTimer--moved');
+          this.activeTab = this.activeTab === (this.tabs.length - 1) ? 0 : (this.activeTab + 1);
+        }, this.changeTimeout * 1000);
+      },
+    },
+    mounted() {
+      setTimeout(this.switchTab, 100);
+    },
+    updated() {
+      setTimeout(this.switchTab, 100);
     },
     computed: {
       ...mapGetters(['RATES']),
@@ -333,8 +351,6 @@
       },
       tabInfo() {
         const currentSource = [this.conditional, this.stable, this.metals][this.activeTab];
-        console.log('CURRENT SOURCE', currentSource);
-        console.log(this.modulesAmount === 3 ? [currentSource[0]] : currentSource);
         return this.modulesAmount === 3 ? [currentSource[0]] : currentSource;
       },
       bottomText() {
@@ -359,7 +375,8 @@
       height: 100%
     &__main
       height: 100%
-      padding-top: 20px
+      padding-top: 19px
+      box-sizing: border-box
     &__dateTime
       height: 56px
       padding: 0 32px 28px
@@ -389,10 +406,19 @@
       opacity: 0.6
       font-size: 32px
       font-weight: bold
-      padding-bottom: 24px
+      position: relative
       &--active
         opacity: 1
-        border-bottom: 12px solid #29b260
+        padding-bottom: 24px
+    &__activeTabTimer
+      height: 12px
+      background-color: #29b260
+      width: 70px
+      position: absolute
+      bottom: 0
+      left: 0
+      &--moved
+        left: calc(100% - 70px)
     &__exchangeNote
       font-size: 32px
       display: flex
@@ -425,7 +451,7 @@
       &--2modules
         font-size: 32px
     &__currencies
-      height: 54vh
+      height: 57vh
       display: flex
       flex-direction: column
     &__currencyInfo

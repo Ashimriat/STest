@@ -75,7 +75,9 @@
       & > div
         height: 152px
         &:not(:last-child)
-          margin-bottom: 10px
+          margin-bottom: 30px
+      @media (max-width: 1080px)
+        max-width: 100vw
     &__queueContainer
       max-width: 35vw
       width: 100%

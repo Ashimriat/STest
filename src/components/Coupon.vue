@@ -45,6 +45,8 @@
       font-weight: bold
       color: #ffffff
       padding: 0 20px
+      @media (max-width: 1080px)
+        font-size: 160px
       &--new
         background-color: #36de61
         box-shadow: 0 2px 100px 0 $green

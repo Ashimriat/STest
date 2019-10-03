@@ -43,7 +43,7 @@
     components: { ExchangeRates, Video, CouponQueue },
     data() {
       return {
-        modules: ['video', 'rates'],
+        modules: ['video', 'coupons'],
       }
     },
     mounted() {
@@ -68,7 +68,7 @@
       grid-template-columns: 30vw 70vw
       @media (max-width: 1080px)
         grid-template: 'a' 'b'
-        grid-template-rows: 30vh 70vh
+        grid-template-rows: 31.5vh 68.5vh
     &--3modules
       grid-template: 'a b' 'c b'
       grid-template-columns: 65vw 35vw
