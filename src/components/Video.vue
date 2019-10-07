@@ -24,7 +24,7 @@
     },
     mounted() {
       this.$refs.videoEl.src = config.videoSource;
-      // eventBus.$on('PLAY_VIDEO', () => this.playVideo());
+      eventBus.$on('PLAY_VIDEO', () => this.playVideo());
     }
   }
 </script>

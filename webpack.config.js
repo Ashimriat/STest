@@ -51,6 +51,13 @@ module.exports = (env, argv) => {
               }
             }
           ]
+        },
+        {
+          test: /\.mp4$/,
+          loader: 'url-loader',
+          options: {
+            mimetype: 'video/mp4'
+          }
         }
       ]
     },

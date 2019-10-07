@@ -1,3 +1,5 @@
+import videoFile from '../assets/video.mp4';
+
 export default {
-  videoSource: 'https://webm.red/3nzQ.webm'
+  videoSource: videoFile
 };
