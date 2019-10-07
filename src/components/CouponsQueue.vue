@@ -16,6 +16,7 @@
           :area="coupon.area"
         )
       div.CouponsQueue__queueContainer(
+        :class="{'CouponsQueue__queueContainer--hidden': modulesAmount === 3}"
         v-if="COUPONS_WINDOWLESS.length"
       )
         div.CouponsQueue__queueTitle
@@ -38,6 +39,7 @@
   export default {
     name: 'CouponQueue',
     components: { Fragment, Coupon },
+    props: ['modulesAmount'],
     computed: {
       COUPONS() {
         return this.$store.getters.COUPONS;
@@ -86,6 +88,8 @@
       background-color: #000000
       flex-direction: column
       @media (max-width: 1080px)
+        display: none
+      &--hidden
         display: none
     &__queueTitle
       padding: 37px 56px 46px

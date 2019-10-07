@@ -43,7 +43,7 @@
     components: { ExchangeRates, Video, CouponQueue },
     data() {
       return {
-        modules: ['video', 'coupons'],
+        modules: ['video', 'coupons', 'rates'],
       }
     },
     mounted() {
