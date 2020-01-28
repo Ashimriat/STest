@@ -8,7 +8,7 @@
   "scripts": {
     "build:client:dev": "webpack-dev-server --open --mode development --config webpack.config.js --inline --hot --watch",
     "build:client:prod": "webpack --mode production --config webpack.config.js",
-    "build:serve:dev": "webpack --mode development --config webpack.config.server.js",
+    "build:serve:dev": "webpack --mode development --config webpack.config.server.js --watch",
     "build:serve:prod": "webpack --mode production --config webpack.config.server.js",
     "build:dev": "yarn build:client:dev && yarn build:serve:dev",
     "build:prod": "yarn build:client:prod && yarn build:serve:prod"

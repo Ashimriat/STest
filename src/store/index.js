@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import { eventBus } from '../components/App';
+import { eventBus } from "../components/App";
 
 
 Vue.use(Vuex);
@@ -33,6 +33,7 @@ export default new Vuex.Store({
   state: {
     exchangeRates: [],
     coupons: [],
+    videos: []
   },
   mutations: {
     UPDATE_COUPONS(state, { data }) {
@@ -69,37 +70,64 @@ export default new Vuex.Store({
         }
       });
       state.exchangeRates = newRates;
+    },
+    UPDATE_VIDEOS(state, { data: video }) {
+      state.videos.push(video);
+    },
+    CLEAR_VIDEOS(state) {
+      state.videos.forEach(video => URL.revokeObjectURL(video.url));
+      state.videos = [];
+    },
+    ADD_VIDEO_INFO(state, { data: { hash } }) {
+      const videoIndex = state.videos.length - 1;
+      if (videoIndex < 0) return;
+      const newVideoObj = {
+        url: state.videos[videoIndex],
+        hash
+      };
+      const newVideos = [...state.videos];
+      newVideos[videoIndex] = newVideoObj;
+      state.videos = newVideos;
     }
   },
   actions: {
     INIT_SOCKET({ dispatch }) {
       const createSocket = () => {
-        const socket = new WebSocket('ws:localhost:3000');
+        const socket = new WebSocket('ws:10.53.54.242:3000');
         socket.onopen = () => console.log('WebSocket соединение установлено');
         socket.onclose = () => {
           console.log('WebSocket соединение не установлено');
-          setTimeout(createSocket, 10000);
+          setTimeout(createSocket, 5000);
         };
         socket.onmessage = event => dispatch('PROCESS_SOCKET_MESSAGE', { event });
       };
       createSocket();
+      console.log("Сокет создан!");
     },
     PROCESS_SOCKET_MESSAGE({ commit }, { event }) {
-      const { type, data } = JSON.parse(event.data);
-      if (type === 'PLAY_VIDEO') {
-        eventBus.$emit('PLAY_VIDEO');
-      } else {
-        commit(type, { data });
-        if (type !== 'UPDATE_COUPONS' || !priorityStatuses.includes(data.status)) return;
-        const newStatus = data.status === 'new' ? 'newPending' : 'remindPending';
-        setTimeout(() => {
-          commit(type, { data: { ...data, status: newStatus } })
-        }, 5000);
+      try {
+        const { type, data } = JSON.parse(event.data);
+        if (type === 'CLEAR_VIDEOS') {
+          commit(type);
+          eventBus.$emit('newVideos');
+        } else {
+          commit(type, { data });
+          if (type !== 'UPDATE_COUPONS' || !priorityStatuses.includes(data.status)) return;
+          const newStatus = data.status === 'new' ? 'newPending' : 'remindPending';
+          setTimeout(() => {
+            commit(type, {data: {...data, status: newStatus}})
+          }, 5000);
+        }
+      } catch (e) {
+        // если прислан видеофайл
+        const fileBlob = new Blob([event.data], { type: 'video' });
+        const videoUrl = URL.createObjectURL(fileBlob);
+        commit('UPDATE_VIDEOS', { data: videoUrl });
       }
     }
   },
   getters: {
     RATES: state => state.exchangeRates,
-    COUPONS: state => state.coupons
+    COUPONS: state => state.coupons,
   }
 })
